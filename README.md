@@ -10,11 +10,13 @@ Please keep yourself up-to-date on it by watching this repository and watch it g
  
 ## To Do
 - [x] Basic Rendering System
+    - [ ] Fix old Pixels not being removed from output
 - [x] Base Layer System
     - [ ] Extended Layer System (e.g: Separately Editing Layers)
 - [ ] Control System
 - [ ] DialogBox Element
 - [ ] 2D Drawing for Menus and Map Productions
+    - [ ] Make custom language/interpreter for the map language (MapLang - `.mapl`)
 - [ ] Asciigine Settings/Configuration
 
 
