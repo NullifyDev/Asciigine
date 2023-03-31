@@ -1,0 +1,66 @@
+public static class Current
+    {
+        private static Dictionary<string, Buffer> Content = new();
+        public  static int Count = Content.Count;
+        public  static int GetLen() => Content.Count;
+        
+        public static void Update(Buffer layer, int pos)
+        {
+            pos -= 1;
+            for (int i = 0; i < layer.Frame.Count; i++)
+            {
+                if (Content.Count > 0)
+                {
+                    if (!layer.Frame.Contains(Content.ElementAt(pos).Value.Frame[i]))
+                    {
+                        Console.SetCursorPosition(Content.ElementAt(pos).Value.Frame[i].Pos.x,
+                            Content.ElementAt(pos).Value.Frame[i].Pos.y);
+                        Out(" ");
+                    }
+                }
+            }
+            Content = Layers.Current;
+            if (Content.ElementAt(pos).Value! != layer) Layers.Current.Values.ElementAt(pos).Frame = layer.Frame;
+        }
+        
+        public static void ListLayers() 
+        {
+            Outln($"[Layers]");
+            for(int i = Renderer.Layers.Count()-1; i > -1; i--)
+            {
+                if (i == 0) Outln($" └─[{i+1}] Name: {Renderer.Layers.Keys.ElementAt(i)}");
+                else        Outln($" ├─[{i+1}] Name: {Renderer.Layers.Keys.ElementAt(i)}");
+            }
+        }
+        
+        public static void Add(Buffer layer, string name = "Nameless Layer", int? pos = null)
+        {
+            int duplicates = 1;
+            for (int i = 0; i < Renderer.Layers.Count(); i++)
+            {
+                if (name == Renderer.Layers.ToList()[i].Key) Exception.Throw.DupeLayerName(name);
+            
+                if (Renderer.Layers.ToList()[i].Key.StartsWith(name))
+                {
+                    if (Renderer.Layers.ToList()[i].Key.Remove(0, name.Length) != duplicates.ToString())
+                    {
+                        if (duplicates != 1) name += duplicates.ToString();
+                    }
+                }
+            }
+
+            if (pos == null || pos <= 0) pos = Count+1;
+            var temp = new Dictionary<string, Buffer>();
+            //if (pos <= 0) pos = 1;
+
+            for (int i = 0; i < pos; i++)
+            {
+                if (i == pos - 1) temp.Add(name, layer);
+                else temp.Add(Renderer.Layers.ElementAt(i).Key, Renderer.Layers.ElementAt(i).Value);
+            }
+
+            Content = temp;
+        }
+        
+        
+    }

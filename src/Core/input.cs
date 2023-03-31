@@ -1,7 +1,9 @@
 ﻿using static Asciigine.Utils;
 
 namespace Asciigine.Core;
-
+/// <summary>
+/// TO DO: Find a way to constantly check for input without ever stopping or delaying the tick.
+/// </summary>
 public delegate void Keys();
 
 public class InputEvent

@@ -1,7 +1,9 @@
 ﻿using Asciigine.Core;
 using static Asciigine.Utils;
 namespace Asciigine;
-
+/// <summary>
+/// TODO: Implement Interpreter that supports the Collision System. 
+/// </summary>
 public static class Map
 {
     public static Dictionary<string, HashSet<MapBuilder>> Maps = new();

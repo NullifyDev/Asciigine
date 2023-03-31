@@ -1,0 +1,16 @@
+#> This is a multi-line comment <#
+## Line in 2D  
+#: [ 
+    "0:0" "15:0", 
+    "15:0" "15:7", 
+    "15:7" "7:0",
+    "7:0" "0:0"
+] 
+
+#>
+char: [ 
+    SourceX:SourceY, DestinationX:DestinationY 
+], Value 
+
+"Value" is just a value. Recommended to treat it as Collision Value 
+<#

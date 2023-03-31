@@ -1,5 +1,8 @@
-﻿namespace Asciigine.Core;
-
+﻿using Asciigine.Core;
+namespace Asciigine.Assets;
+/// <summary>
+/// TO DO: Implement Dialog Box for the developer.  
+/// </summary>
 public class DialogBox
 {
     public string text = "";
