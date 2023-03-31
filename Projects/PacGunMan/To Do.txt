@@ -1,0 +1,1 @@
+﻿ - Optimize Layer Upadting by first Clearing the buffer then checking what layers are going to change THEN render.
