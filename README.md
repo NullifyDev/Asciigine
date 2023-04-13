@@ -16,7 +16,7 @@ Please keep yourself up-to-date on it by watching this repository and watch it g
 - [ ] Control System
 - [ ] DialogBox Element
 - [ ] 2D Drawing for Menus and Map Productions
-    - [ ] Make custom language/interpreter for the map language (MapLang - `.mapl`)
+    - [ ] Make custom language/interpreter for the map language (SceneScript - `.ss`)
 - [ ] Asciigine Settings/Configuration
 
 
