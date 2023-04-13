@@ -1,14 +1,17 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using System.Security.Principal;
 
 namespace Asciigine
 {
     public static class Administrator
     {
-
+        #if (LINUX)
         [DllImport("libc")]
+        
         public static extern uint getuid();
-
+        #endif
+            
+         
         /// <summary>
         /// Asks for administrator privileges upgrade if the platform supports it, otherwise does nothing
         /// </summary>
@@ -28,10 +31,12 @@ namespace Asciigine
                         }
                     }
                 }
-                else if (getuid() != 0)
+                #if (LINUX)
+                if (getuid() != 0)
                 {
                     throw new InvalidOperationException($"Application must be run as root/sudo. From terminal, run the executable as 'sudo {name}'");
                 }
+                #endif
             }
             catch (System.Exception ex)
             {
