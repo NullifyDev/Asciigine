@@ -7,7 +7,6 @@ namespace Asciigine
     {
         #if (LINUX)
         [DllImport("libc")]
-        
         public static extern uint getuid();
         #endif
             
@@ -25,17 +24,11 @@ namespace Asciigine
                     using (WindowsIdentity identity = WindowsIdentity.GetCurrent())
                     {
                         WindowsPrincipal principal = new WindowsPrincipal(identity);
-                        if (!principal.IsInRole(WindowsBuiltInRole.Administrator))
-                        {
-                            throw new InvalidOperationException($"Application must be run as administrator. Right click the {name} file and select 'run as administrator'.");
-                        }
+                        if (!principal.IsInRole(WindowsBuiltInRole.Administrator)) throw new InvalidOperationException($"Application must be run as administrator. Right click the {name} file and select 'run as administrator'.");
                     }
                 }
                 #if (LINUX)
-                if (getuid() != 0)
-                {
-                    throw new InvalidOperationException($"Application must be run as root/sudo. From terminal, run the executable as 'sudo {name}'");
-                }
+                if (getuid() != 0) throw new InvalidOperationException($"Application must be run as root/sudo. From terminal, run the executable as 'sudo {name}'");
                 #endif
             }
             catch (System.Exception ex)
