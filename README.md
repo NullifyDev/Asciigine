@@ -24,8 +24,13 @@ Please keep yourself up-to-date on it by watching this repository and watch it g
 
 Because this is under development, you only need to do
 ```sh
-dotnet run new <ProjectName> //To make a new project
-dotnet run run <PrijectName> //To run an existing project
+dotnet run "new:<ProjectName>"  // To make a new project
+dotnet run "open:<ProjectName>" // To open existing project's folder
+dotnet run "run:<PrijectName>"  // To run an existing project
 dotnet run -v
            --Version //Display current Game Engine version
+```
+Because of the way the commands work, arguments must be the first argument to be read before any of the execution/action args
+```
+dotnet run "args:Hello\ World!" "run:MyGame"
 ```
