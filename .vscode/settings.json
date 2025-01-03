@@ -66,6 +66,7 @@
     "string.h": "c",
     "render.h": "c",
     "util.h": "c",
-    "fastprint.h": "c"
+    "fastprint.h": "c",
+    "file.h": "c"
   }
 }

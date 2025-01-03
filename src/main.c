@@ -5,26 +5,21 @@
 #include "renderer/layerManager.h"
 #include "renderer/render.h"
 #include "utils/util.h"
+#include "utils/file.h"
 
 int main()
 {
-	currLogLevel = 2;
+	HIDE_CURSOR();
+
+	maxLogLevel = 2;
 	LayerManager *lm = layermgr_init(3, 40, 20);
 
-	layermgr_add(lm, 0, new_layer(40, 20, 0, 0, "#########################################                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      ##                                      #########################################"));
-	layermgr_add(lm, 1, new_layer(1, 1, 1, 1, "@"));
+	layermgr_add(lm, 0, new_layer(40, 20, 0, 0, file_read("/home/saturn/Asciigine/src/maps/test", 800)));
+	layermgr_add(lm, 1, new_layer(1, 1, 5,  5, "@"));
+	layermgr_add(lm, 2, new_layer(1, 1, 36, 3, "X"));
 
-	int i = -1;
-	int cycles = 1000000;
-	long res = 0;
-	clock_t start = clock();
-	while(++i < cycles) {
-		CURSOR_TO(1, 2);
-		clock_t s = clock();
-		render(lm);
-		res += (clock_t)clock() - s;
-	}
-	fp_print("Average Runtime in %d cyckes: %ldμs\n", cycles, (long)(res/cycles));
+	renderer_start(lm);
 
+	SHOW_CURSOR();
 	return 0;
 }
