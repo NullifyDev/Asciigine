@@ -17,7 +17,9 @@ void layermgr_add(LayerManager *this, const unsigned int layer, Layer *l);
 // void layermgr_modify(unsigned int layer, char *content);
 // void layermgr_rem(unsigned int layer);
 int layermgr_size(LayerManager *lm);
-int layermgr_getlayeroffset(LayerManager *lm, Layer *l);
+int layermgr_getlayeroffset(LayerManager *lm, int layer);
+void layermgr_setlayeroffset(LayerManager *lm, int layer, int x, int y);
+void layermgr_shiftlayer(LayerManager *lm, int layer, int x, int y);
 
 // void layermgr_
 

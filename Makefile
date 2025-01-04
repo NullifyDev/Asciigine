@@ -1,6 +1,6 @@
 # Sphere Binary File
 
-CFLAGS = -g3 -static -O3 -g3 -static -W -Wall -Wextra -Wuninitialized -Wstrict-aliasing -pedantic -Wno-builtin-declaration-mismatch
+CFLAGS = -g -static -Wno-builtin-declaration-mismatch
 # CLFAGS = -O3 -g3 -W -Wall -Wextra -Wuninitialized -Wstrict-aliasing -pedantic
 CSOURCE = $(shell find src -name '*.c')
 

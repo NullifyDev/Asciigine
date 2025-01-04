@@ -1,59 +1,81 @@
-#include <string.h>
+// #include <string.h>
+#include <stdio.h>
+#include <pthread.h>
+#include <time.h>
+#include <unistd.h>
 
 #include "render.h"
 #include "../utils/util.h"
+#include "../input/manager.h"
 
-#include <stdio.h>
-#include <pthread.h>
-
-int running = 0;
+// bool rendering = false;
+int x = 0;
 void render(LayerManager *lm)
 {
+	CURSOR_TO(0, 21);
+	printf(" %d\n", x++);
 	// render only when at least one layer is updated or modified.
-	if (lm->layersUpdated == false) return;
-
-	unsigned int l = 0;
-	while (l < lm->count)
+	if (lm->layersUpdated == true)
 	{
-		Layer *layer = *(lm->layers + l++);
-		int offset = layermgr_getlayeroffset(lm, layer),
-			len = layer_getlen(layer),
-			i = -1, j = -1;
-
-		while (++i < len)
+		unsigned int l = 0;
+		while (l < lm->count)
 		{
-			if (i > (int)layer->w - 1 && i % layer->w == 0)
-				lm->buffer[++j + offset] = '\n';
+			Layer *layer = *(lm->layers + l);
+			int offset = layermgr_getlayeroffset(lm, l++),
+				len = layer_getlen(layer),
+				i = -1, j = -1;
 
-			lm->buffer[++j + offset] = layer->contents[i];
-			lm->buffer[++j + offset] = ' ';
+			while (++i < len)
+			{
+				if (i > (int)layer->w - 1 && i % layer->w == 0)
+					lm->buffer[++j + offset] = '\n';
+
+				lm->buffer[++j + offset] = layer->contents[i];
+				lm->buffer[++j + offset] = ' ';
+			}
 		}
+		CURSOR_TO(0, 2);
+		printf("%s", lm->buffer);
+		lm->layersUpdated = false;
 	}
-	CURSOR_TO(0, 2);
-	printf(lm->buffer);
 }
 
+// typedef struct
+// {
+// 	pthread_t *thread;
+// 	LayerManager *lm;
+// } _RenderArgToken;
 
-void *_async_runner(void *arg)
-{
-	LayerManager *lm = (LayerManager *)arg;
-	while (running)
-	{
-		render(lm);
-	}
-	pthread_testcancel();
-	return NULL;
-}
+// asynchronously running function, executing Synchronous function/instructions.
+// void *_async_renderer_runner(void *args)
+// {
+// 	_RenderArgToken *t = (_RenderArgToken *)args;
 
-void renderer_start(LayerManager *lm)
-{
-	running = 1;
-	pthread_t thread;
-	int ret = pthread_create(&thread, NULL, _async_runner, lm);
-	if (ret)
-	{
-		perror("pthread_create");
-		return;
-	}
-	pthread_join(thread, NULL);
-}
+// 	pthread_join(t->thread, NULL);
+// 	while (rendering)
+// 	{
+// 		render(t->lm);
+// 		usleep(10000);
+// 	}
+// 	// pthread_testcancel();
+// 	return NULL;
+// }
+
+// pthread_t *renderer_start(LayerManager *lm)
+// {
+// 	rendering = true;
+// 	pthread_t *thread = malloc(sizeof(pthread_t));
+
+// 	_RenderArgToken t;
+//     t.lm = lm;
+// 	t.thread = thread;
+
+// 	pthread_create(thread, NULL, _async_renderer_runner, (void*)&t);
+// 	pthread_join(*thread, NULL);
+// 	return thread;
+// }
+
+// void render_stop(pthread_t thread)
+// {
+// 	pthread_cancel(thread);
+// }

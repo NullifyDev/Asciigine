@@ -1,2 +1,11 @@
-.*/
+.gitignore
+.*/*
 .vscode/
+.vscode/*
+.git/
+.git/*
+.idea/
+.idea/*
+bin/
+
+perf*

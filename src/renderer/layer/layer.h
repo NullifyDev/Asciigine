@@ -10,6 +10,7 @@ typedef struct Layer {
 } Layer;
 
 Layer *new_layer(int w, int h, int offsetX, int offsetY, char *contents);
+void layer_shift(Layer *layer, int x, int y);
 int layer_getlen(Layer *l);
 
 #endif
