@@ -1,26 +1,23 @@
 #ifndef KEYBOARD
 #define KEYBOARD
 
-#include <stdbool.h>
 #include <pthread.h>
+#include <stdbool.h>
 
-typedef struct Key
-{
-	char key;
-	void (*action)(void);
+typedef struct Key {
+  char key;
+  void (*action)(void);
 } Key;
 
-typedef struct KeyList
-{
-	Key **keys;
-	int capacity;
-	int count;
+typedef struct KeyList {
+  Key **keys;
+  int capacity;
+  int count;
 } KeyList;
 
-typedef struct InputManager
-{
-	KeyList *keylist;
-	int tickrate;
+typedef struct InputManager {
+  KeyList *keylist;
+  int tickrate;
 } InputManager;
 
 InputManager *input_init(int tickrate, int input_count);
@@ -32,5 +29,5 @@ void input_read(InputManager *im);
 // void input_stoplistenner(pthread_t thread);
 
 Key *keylist_add(KeyList *kl, Key *k);
-char *input_getkeychar();
+char *input_getkeychar(void);
 #endif
