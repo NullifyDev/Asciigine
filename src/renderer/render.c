@@ -1,43 +1,36 @@
 // #include <string.h>
-#include <stdio.h>
 #include <pthread.h>
+#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 
+#include "manager.h"
 #include "render.h"
-#include "../utils/util.h"
-#include "../input/manager.h"
+#include "util.h"
 
 // bool rendering = false;
 int x = 0;
-void render(LayerManager *lm)
-{
-	CURSOR_TO(0, 21);
-	printf(" %d\n", x++);
-	// render only when at least one layer is updated or modified.
-	if (lm->layersUpdated == true)
-	{
-		unsigned int l = 0;
-		while (l < lm->count)
-		{
-			Layer *layer = *(lm->layers + l);
-			int offset = layermgr_getlayeroffset(lm, l++),
-				len = layer_getlen(layer),
-				i = -1, j = -1;
+void render(LayerManager *lm) {
+  CURSOR_TO(0, 21);
+  printf(" %d\n", x++);
+  // render only when at least one layer is updated or modified.
+  if (lm->layersUpdated == true) {
+    unsigned int l = 0;
+    while (l < lm->count) {
+      Layer *layer = *(lm->layers + l);
+      int offset = layermgr_getlayeroffset(lm, l++), len = layer_getlen(layer), i = -1, j = -1;
 
-			while (++i < len)
-			{
-				if (i > (int)layer->w - 1 && i % layer->w == 0)
-					lm->buffer[++j + offset] = '\n';
+      while (++i < len) {
+        if (i > (int)layer->w - 1 && i % layer->w == 0) lm->buffer[++j + offset] = '\n';
 
-				lm->buffer[++j + offset] = layer->contents[i];
-				lm->buffer[++j + offset] = ' ';
-			}
-		}
-		CURSOR_TO(0, 2);
-		printf("%s", lm->buffer);
-		lm->layersUpdated = false;
-	}
+        lm->buffer[++j + offset] = layer->contents[i];
+        lm->buffer[++j + offset] = ' ';
+      }
+    }
+    CURSOR_TO(0, 2);
+    printf("%s", lm->buffer);
+    lm->layersUpdated = false;
+  }
 }
 
 // typedef struct

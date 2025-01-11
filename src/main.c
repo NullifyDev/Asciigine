@@ -1,15 +1,15 @@
-#include "init.c"
+#include "init.h"
+#include "utils/log.h"
 
-int main()
-{
-	HIDE_CURSOR();
-	SHOW_CURSOR();
+int main(void) {
+  HIDE_CURSOR();
+  SHOW_CURSOR();
 
-	maxLogLevel = 2;
+  maxLogLevel = 2;
 
-	init();
+  init();
 
-	while(1) {}
+  while (1) {}
 
-	return 0;
+  return 0;
 }

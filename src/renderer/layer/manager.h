@@ -1,15 +1,14 @@
 #ifndef LAYERMANAGER
 #define LAYERMANAGER
 
-#include "layer.h"
 #include <stdbool.h>
+#include "layer.h"
 
-typedef struct LayerManager
-{
-	Layer **layers;
-	unsigned int w, h, capacity, count;
-	char *buffer;
-	bool layersUpdated;
+typedef struct LayerManager {
+  Layer **layers;
+  unsigned int w, h, capacity, count;
+  char *buffer;
+  bool layersUpdated;
 } LayerManager;
 
 LayerManager *layermgr_init(int capacity, int w, int h);
