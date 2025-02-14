@@ -1,48 +1,64 @@
 #include "init.h"
 
-#include <stdio.h>
-
-#include "utils/log.h"
-#include "renderer/render.h"
-#include "utils/util.h"
-#include "utils/file.h"
-#include "input/manager.h"
-
 void init()
 {
-	InputManager *im = input_init(60, 8);
+	im = input_init(60, 8);
 	lm = layermgr_init(3, 40, 20);
 
 	layermgr_add(lm, 0, new_layer(40, 20, 0, 0, file_read("/home/saturn/Asciigine/src/maps/test", 800)));
-	layermgr_add(lm, 1, new_layer(1, 1, 5, 5, "@"));
-	layermgr_add(lm, 2, new_layer(1, 1, 36, 3, "X"));
+	layermgr_add(lm, 2, new_layer(1, 1, 5, 5, "@"));
+	layermgr_add(lm, 1, new_layer(1, 1, 36, 3, "X"));
 
-	Key *w = keylist_add(im->keylist, new_key('w', moveup));
-	Key *s = keylist_add(im->keylist, new_key('s', movedown));
-	Key *a = keylist_add(im->keylist, new_key('a', moveleft));
-	Key *d = keylist_add(im->keylist, new_key('d', moveright));
+	im->keylist = keylist_setup(
+		(Key[]) {
+			{'w', moveup},
+			{'s', movedown},
+			{'a', moveleft},
+			{'d', moveright},
+			{'q', engine_exit}
+		}, 5
+	);
 
-	while(1) {
-		input_read(im);
+	_running = true;
+	while (_running)
+	{
 		render(lm);
+		input_read(im, lm);
 	}
-
-	// pthread_t *renderer = renderer_start(lm);
-	// pthread_t *inputlistenner = input_startlistenner(im);
 }
 void moveup()
 {
-	layermgr_shiftlayer(lm, 1, 0, 1);
+	layermgr_shiftlayer(lm, 2, 0, -1);
 }
 void movedown()
 {
-	layermgr_shiftlayer(lm, 1, 0, -1);
+	layermgr_shiftlayer(lm, 2, 0, 1);
 }
 void moveleft()
 {
-	layermgr_shiftlayer(lm, 1, -1, 0);
+	layermgr_shiftlayer(lm, 2, -1, 0);
 }
 void moveright()
 {
-	layermgr_shiftlayer(lm, 1, 1, 0);
+	layermgr_shiftlayer(lm, 2, 1, 0);
+}
+
+void free_engine() {
+	
+	lm->buffer = NULL;
+	free(lm->buffer);
+	lm->capacity = 0;
+	lm->count = 0;
+	lm->h = 0;
+	lm->w = 0;
+	lm->layers = NULL;
+	free(lm->layers);
+	lm->updated = NULL;
+	free(lm);
+	// free(et->lm->)
+}
+
+void engine_exit() {
+	_running = false;
+	free_engine();
 }

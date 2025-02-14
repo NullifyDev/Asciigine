@@ -4,6 +4,8 @@
 #include <stdbool.h>
 #include <pthread.h>
 
+#include "../renderer/layer/manager.h"
+
 typedef struct Key
 {
 	char key;
@@ -12,7 +14,7 @@ typedef struct Key
 
 typedef struct KeyList
 {
-	Key **keys;
+	Key *keys;
 	int capacity;
 	int count;
 } KeyList;
@@ -27,10 +29,15 @@ InputManager *input_init(int tickrate, int input_count);
 KeyList *keylist_init(int amount);
 Key *new_key(char c, void (*action)(void));
 
-void input_read(InputManager *im);
+void input_read(InputManager *im, LayerManager *lm);
 // pthread_t *input_startlistenner(InputManager *kl);
 // void input_stoplistenner(pthread_t thread);
 
-Key *keylist_add(KeyList *kl, Key *k);
+Key *keylist_add(InputManager* im, Key *k);
 char *input_getkeychar();
+
+Key *keylist_getkey(KeyList *kl, char c);
+KeyList *keylist_setup(Key *keys, int count);
+
+
 #endif

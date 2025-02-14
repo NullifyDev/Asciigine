@@ -2,6 +2,7 @@
 #define LAYER
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct Layer {
 	unsigned int w, h;
@@ -9,8 +10,9 @@ typedef struct Layer {
 	char *contents;
 } Layer;
 
-Layer *new_layer(int w, int h, int offsetX, int offsetY, char *contents);
-void layer_shift(Layer *layer, int x, int y);
-int layer_getlen(Layer *l);
+Layer *new_layer(const int w, const int h, const int offsetX, const int offsetY, char *contents);
+void layer_shift(Layer *layer, const int x, const int y);
+void layer_setpos(Layer *layer, const int x, const int y);
+int layer_getlen(const Layer *l);
 
 #endif

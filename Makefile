@@ -1,13 +1,15 @@
 # Sphere Binary File
 
-CFLAGS = -g -static -Wno-builtin-declaration-mismatch
+CFLAGS = -g -pg -static -Wno-builtin-declaration-mismatch
+# CFLAGS = -g -fsanitize=address -Wno-builtin-declaration-mismatch
+
 # CLFAGS = -O3 -g3 -W -Wall -Wextra -Wuninitialized -Wstrict-aliasing -pedantic
 CSOURCE = $(shell find src -name '*.c')
 
 OBJ = $(patsubst src/%.c, bin/asciigine.o, $(CSOURCE))
 BIN = $(shell find bin -name '*.o')
 
-GCC = $(shell gcc $(CFLAGS) $(OBJ))
+gcc = $(shell gcc $(CFLAGS) $(OBJ))
 
 run: rebuild
 	clear

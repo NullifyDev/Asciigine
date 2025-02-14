@@ -1,4 +1,5 @@
-#pragma once
+#ifndef LOG_H
+#define LOG_H
 
 #define LOG_LEVEL_PRINT 0
 #define LOG_LEVEL_ERROR 1
@@ -20,3 +21,5 @@ void warning(const char *msg);
 void debug(const char *msg);
 void log(const char *msg);
 void verbose(const char *msg);
+
+#endif
