@@ -1,15 +1,26 @@
 #ifndef KEYBOARD
 #define KEYBOARD
 
+#include <stdatomic.h>
+#include <stdio.h>
+#include <termios.h>
+#include <stdlib.h>
+#include <unistd.h>
 #include <stdbool.h>
 #include <pthread.h>
+// #include <conio.h>
 
+#include "../utils/terminal.h"
+#include "../utils/log.h"
+#include "../utils/util.h"
 #include "../renderer/layer/manager.h"
 
+typedef void *(*Action)(void*[]);
 typedef struct Key
 {
 	char key;
-	void (*action)(void);
+	Action action;
+	void **args;
 } Key;
 
 typedef struct KeyList
@@ -22,22 +33,29 @@ typedef struct KeyList
 typedef struct InputManager
 {
 	KeyList *keylist;
-	int tickrate;
+	unsigned int tickrate;
+	pthread_t *thread;
+	void ** thread_ret;
 } InputManager;
 
+static volatile _Atomic(bool) _input_alive_a = false;
+static pthread_t input_pt;
+static InputManager *im;
+
 InputManager *input_init(int tickrate, int input_count);
-KeyList *keylist_init(int amount);
-Key *new_key(char c, void (*action)(void));
 
-void input_read(InputManager *im, LayerManager *lm);
-// pthread_t *input_startlistenner(InputManager *kl);
-// void input_stoplistenner(pthread_t thread);
+void    *_input_read     (void *arg);
+void    *input_start     (void *args);
+void     input_end       (pthread_t pthread);
+void     input_read      (InputManager *im);
+char    *input_getkeychar(void);
 
-Key *keylist_add(InputManager* im, Key *k);
-char *input_getkeychar();
+Key     *key_new         (char c, Action action);
+KeyList *keylist_init    (int amount);
+Key     *keylist_add     (InputManager* im, Key *k);
+Key     *keylist_getkey  (KeyList *kl, char c);
+KeyList *keylist_setup   (int count, Key *keys);
 
-Key *keylist_getkey(KeyList *kl, char c);
-KeyList *keylist_setup(Key *keys, int count);
-
+void keys_add(InputManager *im, int count, Key *keys);
 
 #endif

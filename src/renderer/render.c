@@ -1,21 +1,12 @@
-// #include <string.h>
-#include <stdio.h>
-#include <pthread.h>
-#include <time.h>
-#include <unistd.h>
-
 #include "render.h"
-#include "../utils/util.h"
-#include "../input/manager.h"
-#include "../utils/log.h"
 
 int x = 0;
-void render(LayerManager *lm)
+void _render(LayerManager *lm)
 {
-	if (lm == NULL) return;
+	// printf("_render(LayerManager *): hit!\n");
 	if (!lm->updated) return;
 	
-	CLEAR();
+	clear();
 
 	int l = -1;
 	while (++l < lm->count)
@@ -34,6 +25,31 @@ void render(LayerManager *lm)
 		}
 	}
 	CURSOR_TO(0, 0);
-	printf("%s\n", lm->buffer);
+	printf("%s\n%d", lm->buffer, x);
 	lm->updated = false;
 }
+
+void *render(void *arg) {
+	// printf("render: running!\n");
+	LayerManager * lm = (LayerManager *)arg;
+
+	while(lm->thread != 0) 
+	{
+		_render(lm);
+	}
+
+	return NULL;
+}
+
+// void *render_start(void *layermgr)
+// {
+// 	printf("render: initializing...  ");
+// 	lm = (LayerManager *)layermgr;
+// 	_render_alive_a = true;
+// 	printf("%s\n", lm == NULL ? "Failed (NULL)" : "Done!");
+// 	if (pthread_create((pthread_t *)render_pt, NULL, _render, NULL) != 0) {
+//         perror("Failed to create renderer thread \"renderer_pt\"");
+//         exit(EXIT_FAILURE);
+//     }
+// 	return NULL;
+// }

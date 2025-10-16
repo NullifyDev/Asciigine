@@ -1,46 +1,37 @@
 #include "manager.h"
 
-#include <stdio.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <stdbool.h>
-// #include <conio.h>
-
-#include "../utils/terminal.h"
-#include "../utils/log.h"
-#include "../utils/util.h"
-
 bool _reading_input = false;
 InputManager *input_init(int tickrate, int input_count)
 {
-	InputManager *im = calloc(sizeof(InputManager), 1);
+	InputManager *im = calloc(1, sizeof(InputManager));
 	im->keylist = keylist_init(input_count);
 	im->tickrate = tickrate;
+	im->thread = calloc(1, sizeof(pthread_t));
 	return im;
 }
 
 KeyList *keylist_init(int keylist_capacity)
 {
 
-	KeyList *kl = calloc(sizeof(KeyList), 1);
+	KeyList *kl = calloc(1, sizeof(KeyList));
 	kl->capacity = keylist_capacity;
-	kl->keys = malloc(sizeof(Key) * kl->capacity);
+	kl->keys = calloc(kl->capacity, sizeof(Key));
 	kl->count = 0;
 
 	return kl;
 }
 
-Key *new_key(char c, void (*action)(void))
+Key *key_new(char c, Action action)
 {
-	Key *key = calloc(sizeof(Key), 1);
+	Key *key = calloc(1, sizeof(Key));
 	key->key = c;
 	key->action = action;
 	return key;
 }
 
-void input_read(InputManager *im, LayerManager *lm)
+void input_read(InputManager *im)
 {
+	// printf("input_read(InputManager *): hit!\n");
 	struct termios oldt, newt;
 	tcgetattr(STDIN_FILENO, &oldt);
 	newt = oldt;
@@ -49,50 +40,47 @@ void input_read(InputManager *im, LayerManager *lm)
 
 	int k = -1;
 	KeyList *kl = im->keylist;
-	LINEBUFF_OFF();
+	linebuff_off();
 	char c = getch();
 
-	bool scanning = true;
-	while (++k < kl->count)
+	// bool scanning = true;
+	while (++k < kl->count) // && scanning)
 	{
-		char key = kl->keys[k].key;
+		// char key = kl->keys[k].key;
 		if (c == kl->keys[k].key)
 		{
 			// layermgr_shiftlayer(lm, 1, 1, 0);
-			kl->keys[k].action();
-			scanning = false;
+			printf("pressed: %c | ", c);
+			kl->keys[k].action(NULL);
+			// scanning = false;
 			break;
 		}
 	}
 	tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
 }
 
-// void key_run(Key *k, void *arg) {
-// 	(*k->action)(arg);
-// }
+void *_input_read(void *arg) {
+	InputManager *im = (InputManager *)arg;
 
-// void *_async_input_runner(void *arg)
-// {
-// 	InputManager *im = (InputManager *)arg;
-// 	while (_reading_input)
-// 	{
-// 		input_read(im);
-// 	}
-// }
-// 
-// pthread_t *input_startlistenner(InputManager *im)
-// {
-// 	pthread_t *thread = malloc(sizeof(pthread_t));
-// 	_reading_input = true;
-// 	pthread_create(thread, NULL, _async_input_runner, im);
-// 	pthread_join(*thread, NULL);
-// 	return thread;
-// }
-// 
-// void input_stoplistenner(pthread_t thread)
-// {
-// 	pthread_cancel(thread);
-// }
+	while(im->thread) 
+		input_read(im);
+
+	return NULL;
+}
+
+void *input_start(void *args)
+{
+	// func_arg *arg = args;
+	InputManager *im = (InputManager *)args;
+	
+	_input_alive_a = true;
+	if (pthread_create(&input_pt, NULL, _input_read, im) != 0) {
+        perror("Failed to create renderer thread \"renderer_pt\"\n");
+        exit(EXIT_FAILURE);
+    }
+
+	return NULL;
+}
 
 Key *keylist_add(InputManager* im, Key *k)
 {
@@ -100,7 +88,6 @@ Key *keylist_add(InputManager* im, Key *k)
 	if (kl->count == kl->capacity)
 		error("cannot add more keys - key list is full.");
 	kl->keys[kl->count] = *k;
-	// return kl->count++;
 	return kl->keys + kl->count++;
 }
 
@@ -112,9 +99,11 @@ Key *keylist_getkey(KeyList *kl, char c)
 		if (key->key == c)
 			return key;
 	}
+
+	return NULL;
 }
 
-KeyList *keylist_setup(Key *keys, int count)
+KeyList *keylist_setup(int count, Key *keys)
 {
 	if (count == 0) {
 		warning("Key List is set to 0");
@@ -130,4 +119,28 @@ KeyList *keylist_setup(Key *keys, int count)
 	}
 
 	return kl;
+}
+
+void keys_add(InputManager *im, int count, Key *keys)
+{
+	KeyList *kl = im->keylist;
+	unsigned int c = count + kl->count < kl->capacity ? kl->capacity : count + kl->count,
+			    pc = count + kl->count < kl->capacity ? kl->capacity : kl->count;
+
+	kl->count = 0;
+
+    Key *temp = calloc(c, sizeof(Key *));
+
+    if (!temp) return;
+
+	int i = 0;
+	while (i < c)
+	{
+		temp[i] = i < pc ? kl->keys[i] : keys[i];
+		i++; kl->count++;
+	}
+
+    Key *old_layers = kl->keys;
+    kl->keys = temp;
+    free(old_layers);
 }

@@ -1,31 +1,26 @@
 #include "log.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
-
-int maxLogLevel;
-void logger(int level, const char *msg)
+void logger(LogLevel level, const char *msg)
 {
 	if (level > maxLogLevel) return;
 	switch (level)
 	{
-	case LOG_LEVEL_PRINT:
-		printf(msg);
+	case LOGLEVEL_PRINT:
+		printf("%s", msg);
 		return;
-	case LOG_LEVEL_ERROR:
+	case LOGLEVEL_ERROR:
 		printf("\033[38;2;255;0;0m[ERROR]:   %s\033[0m\n", msg);
 		return;
-	case LOG_LEVEL_WARNING:
+	case LOGLEVEL_WARNING:
 		printf("\033[38;2;255;255;0m[WARNING]: %s\033[0m\n", msg);
 		return;
-	case LOG_LEVEL_DEBUG:
+	case LOGLEVEL_DEBUG:
 		printf("\033[38;2;0;255;255m[DEBUG]:   %s\033[0m\n", msg);
 		return;
-	case LOG_LEVEL_LOG:
+	case LOGLEVEL_LOG:
 		printf("[LOG]:     %s\033[0m\n", msg);
 		return;
-	case LOG_LEVEL_VERBOSE:
+	case LOGLEVEL_VERBOSE:
 		printf("[VERBOSE]: %s\033[0m\n", msg);
 		return;
 	default:
@@ -41,25 +36,25 @@ void print(const char *msg)
 
 void error(const char *msg)
 {
-	logger(LOG_LEVEL_ERROR, msg);
+	logger(LOGLEVEL_ERROR, msg);
 }
 
 void warning(const char *msg)
 {
-	logger(LOG_LEVEL_WARNING, msg);
+	logger(LOGLEVEL_WARNING, msg);
 }
 
 void debug(const char *msg)
 {
-	logger(LOG_LEVEL_DEBUG, msg);
+	logger(LOGLEVEL_DEBUG, msg);
 }
 
-void log(const char *msg)
+void _log(const char *msg)
 {
-	logger(LOG_LEVEL_LOG, msg);
+	logger(LOGLEVEL_LOG, msg);
 }
 
 void verbose(const char *msg)
 {
-	logger(LOG_LEVEL_VERBOSE, msg);
+	logger(LOGLEVEL_VERBOSE, msg);
 }

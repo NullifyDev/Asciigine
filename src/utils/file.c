@@ -1,25 +1,28 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include "file.h"
 
-#include "log.h"
-
-char* file_read(const char* path) {
-    FILE* file = fopen(path, "r");
-    if (!file) return NULL;
-
-    fseek(file, 0, SEEK_END);
-    long size = ftell(file);
-    fseek(file, 0, SEEK_SET);
-
-    char* content = malloc(size + 1);
-    if (!content) {
-        fclose(file);
+char* file_read(char* path, int size)
+{
+    if (path == NULL) {
+        printf("NULL path passed\n");
         return NULL;
     }
 
-    size_t bytesRead = fread(content, 1, size, file);
+    FILE *f;
+    f = fopen(path, "r");
+    if (!f) return NULL;
+    fseek(f, 0, SEEK_END);
+    size = ftell(f);
+    fseek(f, 0, SEEK_SET);
+
+    char* content = calloc(size + 1, sizeof(char));
+    if (!content) {
+        fclose(f);
+        return NULL;
+    }
+
+    size_t bytesRead = fread(content, 1, size, f);
     content[bytesRead] = '\0';
 
-    fclose(file);
+    fclose(f);
     return content;
 }

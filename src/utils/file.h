@@ -1,8 +1,11 @@
-#ifndef FILE
-#define FILE
+#ifndef FILE_H
+#define FILE_H
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// #include <>
 
-char *file_read(const char *file, int size);
+char* file_read(char* path, int size);
 
 #endif

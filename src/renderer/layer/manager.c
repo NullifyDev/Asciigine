@@ -3,6 +3,7 @@
 
 #include "manager.h"
 
+#include <pthread.h>
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
@@ -11,16 +12,16 @@
 
 LayerManager *layermgr_init(int capacity, int w, int h)
 {
-	LayerManager *lm = calloc(sizeof(LayerManager), 1);
+	LayerManager *lm = calloc(1, sizeof(LayerManager));
 	lm->w = w * 2; // multiply by 2 because text height-to-width ratio is 2:1
 	lm->h = h;
-	lm->buffer = calloc(sizeof(unsigned char), (lm->w * lm->h) * 2 + lm->h);
+	lm->buffer = (char *)calloc((lm->w * lm->h) * 2 + lm->h, sizeof(unsigned char));
 	lm->capacity = capacity;
-	lm->layers = calloc(sizeof(Layer*), lm->capacity);
+	lm->layers = calloc(lm->capacity, sizeof(Layer*));
 	lm->count = 0;
-	lm->updated = false;
-
-	lm->Empty = calloc(sizeof(Layer), 1);
+	lm->updated = true;
+	lm->thread = calloc(1, sizeof(pthread_t));
+	lm->thread_ret = NULL;
 	return lm;
 }
 
@@ -35,7 +36,7 @@ void layermgr_add(LayerManager *lm, const unsigned int layer, Layer *l)
 		exit(0);
 		return;
 	}
-	if (lm->layers + layer >= lm->layers + lm->capacity || lm->layers + layer < lm->layers)
+	if (lm->layers + layer >= lm->layers + lm->capacity) // || lm->layers + layer < lm->layers)
 	{
 		error("A specified layer position is out of bounds. Check your target layer and layer manager size\n");
 		exit(1);
@@ -45,6 +46,7 @@ void layermgr_add(LayerManager *lm, const unsigned int layer, Layer *l)
 	lm->count++;
 	lm->updated = true;
 }
+
 int layermgr_size(LayerManager *lm)
 {
 	return (lm->w * lm->h) * 2;
@@ -67,6 +69,48 @@ void layermgr_shiftlayer(LayerManager *lm, const unsigned int l, const int x, co
 	layermgr_setlayeroffset(lm, l, lm->layers[l]->offsetX + x, lm->layers[l]->offsetY + y);
 }
 
+
+
+void layermgr_free(LayerManager *lm) {
+	if (lm == NULL) return;
+	lm->buffer = NULL;
+	free(lm->buffer);
+	lm->layers = NULL;
+	free(lm->buffer);
+
+	lm->w = 0;
+	lm->h = 0;
+	lm->capacity = 0;
+	lm->count = 0;
+	lm->updated = 0;
+	lm->thread_ret = NULL;
+	free(lm->thread);
+	
+	free(lm);
+}
+
+void layers_add(LayerManager *lm, unsigned int count, Layer *layers[]) 
+{
+	unsigned int c = count + lm->count < lm->capacity ? lm->capacity : count + lm->count,
+				pc = count + lm->count < lm->capacity ? lm->capacity : lm->count;
+
+	lm->count = 0;
+
+    Layer **temp = calloc(c, sizeof(Layer *));
+
+    if (!temp) return;
+
+	int i = 0;
+	while (i < c) {
+		temp[i] = i < pc ? lm->layers[i] : layers[i];
+		i++; lm->count++;
+	}
+
+    Layer **old_layers = lm->layers;
+    lm->layers = temp;
+    free(old_layers);
+}
+ 
 // void layermgr_debug_printlayers(LayerManager *lm) {
 // 	Layer *ptr = lm->layers;
 // 	printf("lm->layers: %p | lm->capacity): %d [ \n", p, lm->capacity);

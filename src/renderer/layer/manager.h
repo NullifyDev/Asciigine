@@ -3,6 +3,7 @@
 
 #include "layer.h"
 #include <stdbool.h>
+#include <pthread.h>
 
 typedef struct LayerManager
 {
@@ -11,10 +12,14 @@ typedef struct LayerManager
 	char *buffer;
 	bool updated;
 	const Layer *Empty;
+	pthread_t *thread;
+	void ** thread_ret;
 } LayerManager;
 
+static LayerManager *lm;
+
 LayerManager *layermgr_init(int capacity, int w, int h);
-void layermgr_add(LayerManager *this, const unsigned int layer, Layer *l);
+void layermgr_add(LayerManager *lm, const unsigned int layer, Layer *l);
 // void layermgr_modify(unsigned int layer, char *content);
 // void layermgr_rem(unsigned int layer);
 int layermgr_size(LayerManager *lm);
@@ -23,6 +28,8 @@ void layermgr_setlayeroffset(LayerManager *lm, const unsigned int l, const int x
 void layermgr_shiftlayer(LayerManager *lm, const unsigned int l, const int x, const  int y);
 
 void layermgr_debug_printlayers(LayerManager *lm);
-// void layermgr_
+void layermgr_free(LayerManager *lm);
+
+void layers_add(LayerManager *lm, unsigned int count, Layer *layers[]);
 
 #endif
