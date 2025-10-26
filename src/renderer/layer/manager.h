@@ -1,9 +1,19 @@
 #ifndef LAYERMANAGER
 #define LAYERMANAGER
 
-#include "layer.h"
 #include <stdbool.h>
 #include <pthread.h>
+
+#include "layer.h"
+#include "../../utils/util.h"
+#include "../../utils/args.h"
+
+#include <pthread.h>
+#include <string.h>
+#include <stdlib.h>
+#include <time.h>
+#include <stdio.h>
+#include <stdbool.h>
 
 typedef struct LayerManager
 {
@@ -26,6 +36,7 @@ int layermgr_size(LayerManager *lm);
 int layermgr_getlayeroffset(LayerManager *lm, const unsigned int layer);
 void layermgr_setlayeroffset(LayerManager *lm, const unsigned int l, const int x, const int y);
 void layermgr_shiftlayer(LayerManager *lm, const unsigned int l, const int x, const  int y);
+void layermgr_shiftlayer_ca(Args *coreargs, const unsigned int l, const int x, const  int y);
 
 void layermgr_debug_printlayers(LayerManager *lm);
 void layermgr_free(LayerManager *lm);

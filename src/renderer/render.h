@@ -13,9 +13,9 @@
 #include "../utils/log.h"
 #include "layer/manager.h"
 
-static pthread_t render_pt;
+// static pthread_t render_pt;
 
-static volatile _Atomic(bool) _render_alive_a = false;
+// static volatile _Atomic(bool) _render_alive_a = false;
 // void *render_start(void *layermgr);
 
 void *render    (void *arg);

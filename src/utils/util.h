@@ -10,9 +10,4 @@ inline static void clear(void) { printf("\033[1;1H\033[2J"); }
 inline static void linebuff_off(void) { setvbuf(stdin, NULL, _IONBF, 0); }
 inline static void linebuff_on(void)  { setvbuf(stdin, NULL, _IOLBF, BUFSIZ); }
 
-typedef struct func_arg {
-	int len;
-	void *value[];
-} func_arg;
-
 #endif

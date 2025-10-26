@@ -13,6 +13,7 @@
 #include "../utils/terminal.h"
 #include "../utils/log.h"
 #include "../utils/util.h"
+#include "../utils/args.h"
 #include "../renderer/layer/manager.h"
 
 typedef void *(*Action)(void*[]);
@@ -38,24 +39,22 @@ typedef struct InputManager
 	void ** thread_ret;
 } InputManager;
 
-static volatile _Atomic(bool) _input_alive_a = false;
-static pthread_t input_pt;
-static InputManager *im;
+static bool _input_alive_a;
 
 InputManager *input_init(int tickrate, int input_count);
 
 void    *_input_read     (void *arg);
-void    *input_start     (void *args);
+void    *input_start     (Args *args);
 void     input_end       (pthread_t pthread);
 void     input_read      (InputManager *im);
 char    *input_getkeychar(void);
 
-Key     *key_new         (char c, Action action);
+Key     *key_new         (char c, Action action, Args *args);
 KeyList *keylist_init    (int amount);
 Key     *keylist_add     (InputManager* im, Key *k);
 Key     *keylist_getkey  (KeyList *kl, char c);
 KeyList *keylist_setup   (int count, Key *keys);
 
-void keys_add(InputManager *im, int count, Key *keys);
+void keys_add(InputManager *im, int count, Key *keys[]);
 
 #endif

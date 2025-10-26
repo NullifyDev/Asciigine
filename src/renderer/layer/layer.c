@@ -23,29 +23,38 @@ int layer_getlen(const Layer *l) {
 	return ((l->w) * l->h) * 2;
 }
 
-char* layer_getDiff(Layer *restrict a, Layer *restrict b) 
+char* layer_getDiff(Layer *a, Layer *b) 
 {
 	char *aa = a->contents,
 		 *ab = b->contents;
 	
-	int tsa =  a->h *  a->w +  a->h, // total size of a
-		tsb = b->h * b->w + b->h; // total size of b
+	int tsa =  a->h * a->w + a->h, // total size of a
+		tsb =  b->h * b->w + b->h,  // total size of b
+		ts  = (tsa > tsb) * tsa + (tsa <=tsb) *tsb;
 
-	char *diff = (char *)calloc((tsa > tsb) * tsa + (tsa <=tsb) *tsb, sizeof(char)),
+	char *diff = (char *)malloc(ts),
 		 *dptr = diff,
 		 *res  = NULL;
 		 
-	while(*aa != '\0' && *ab != '\0')
+	int shorter = (tsa <= tsb) * tsa + (tsa > tsb) * tsb,
+		s = shorter;
+
+	while(s-- >= 0) 
 		if(*(aa++) != *ab) *(dptr++) = *(ab++);
+		else ab++;
 
-	if (*aa == '\0') while (*ab != '\0') *(dptr++) = *(ab++);
-	else 			 while (*aa != '\0') *(dptr++) = *(aa++);
+	if (shorter == tsa) {
+		s = tsb - tsa;
+		while(s-- >= 0)
+			*(dptr++) = *(ab++);
+	} else {
+		s = tsa - tsb;
+		while (s-- >= 0)
+			*(dptr++) = *(aa++);
+	}
 
-	aa = NULL;
-	ab = NULL;
-	
 	res = (char *)memcpy(
-		calloc(dptr - diff, sizeof(char)), 
+		malloc(dptr - diff), 
 		diff, 
 		dptr - diff
 	);

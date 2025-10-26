@@ -1,14 +1,9 @@
 #include "../../utils/log.h"
-#include "../../utils/util.h"
+#include "layer.h"
 
 #include "manager.h"
 
-#include <pthread.h>
-#include <string.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stdio.h>
-#include <stdbool.h>
+
 
 LayerManager *layermgr_init(int capacity, int w, int h)
 {
@@ -20,7 +15,6 @@ LayerManager *layermgr_init(int capacity, int w, int h)
 	lm->layers = calloc(lm->capacity, sizeof(Layer*));
 	lm->count = 0;
 	lm->updated = true;
-	lm->thread = calloc(1, sizeof(pthread_t));
 	lm->thread_ret = NULL;
 	return lm;
 }
@@ -69,6 +63,11 @@ void layermgr_shiftlayer(LayerManager *lm, const unsigned int l, const int x, co
 	layermgr_setlayeroffset(lm, l, lm->layers[l]->offsetX + x, lm->layers[l]->offsetY + y);
 }
 
+void layermgr_shiftlayer_ca(Args *coreargs, const unsigned int l, const int x, const  int y)
+{
+	LayerManager *lm = (LayerManager *)coreargs->ptrs[0]; 
+	layermgr_setlayeroffset(lm, l, lm->layers[l]->offsetX + x, lm->layers[l]->offsetY + y);
+}
 
 
 void layermgr_free(LayerManager *lm) {
@@ -84,33 +83,32 @@ void layermgr_free(LayerManager *lm) {
 	lm->count = 0;
 	lm->updated = 0;
 	lm->thread_ret = NULL;
-	free(lm->thread);
-	
+
 	free(lm);
 }
 
 void layers_add(LayerManager *lm, unsigned int count, Layer *layers[]) 
 {
-	unsigned int c = count + lm->count < lm->capacity ? lm->capacity : count + lm->count,
-				pc = count + lm->count < lm->capacity ? lm->capacity : lm->count;
+	unsigned int newcap = (count + lm->count) < lm->capacity ? count : lm->capacity + count,
+				 newcount = 0;
 
-	lm->count = 0;
-
-    Layer **temp = calloc(c, sizeof(Layer *));
+    Layer **temp = calloc(newcap, sizeof(Layer *));
 
     if (!temp) return;
 
 	int i = 0;
-	while (i < c) {
-		temp[i] = i < pc ? lm->layers[i] : layers[i];
-		i++; lm->count++;
+	while (i < lm->count+count) 
+	{
+		temp[i] = i < lm->count ? lm->layers[i] : layers[i];
+		i++; newcount++;
 	}
 
-    Layer **old_layers = lm->layers;
+	free(lm->layers);
     lm->layers = temp;
-    free(old_layers);
+	lm->count = newcount;
+	lm->capacity = newcap;
 }
- 
+
 // void layermgr_debug_printlayers(LayerManager *lm) {
 // 	Layer *ptr = lm->layers;
 // 	printf("lm->layers: %p | lm->capacity): %d [ \n", p, lm->capacity);

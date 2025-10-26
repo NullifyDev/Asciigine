@@ -6,7 +6,6 @@ InputManager *input_init(int tickrate, int input_count)
 	InputManager *im = calloc(1, sizeof(InputManager));
 	im->keylist = keylist_init(input_count);
 	im->tickrate = tickrate;
-	im->thread = calloc(1, sizeof(pthread_t));
 	return im;
 }
 
@@ -21,11 +20,12 @@ KeyList *keylist_init(int keylist_capacity)
 	return kl;
 }
 
-Key *key_new(char c, Action action)
+Key *key_new(char c, Action action, Args *args)
 {
 	Key *key = calloc(1, sizeof(Key));
 	key->key = c;
 	key->action = action;
+	key->args = args->ptrs;
 	return key;
 }
 
@@ -38,20 +38,21 @@ void input_read(InputManager *im)
 	newt.c_lflag &= ~(ICANON | ECHO);
 	tcsetattr(STDIN_FILENO, TCSANOW, &newt);
 
-	int k = -1;
+	int i = -1;
 	KeyList *kl = im->keylist;
 	linebuff_off();
 	char c = getch();
 
 	// bool scanning = true;
-	while (++k < kl->count) // && scanning)
+	while (++i < kl->count) // && scanning)
 	{
+		Key *k = &kl->keys[i];
 		// char key = kl->keys[k].key;
-		if (c == kl->keys[k].key)
+		if (c == k->key)
 		{
 			// layermgr_shiftlayer(lm, 1, 1, 0);
-			printf("pressed: %c | ", c);
-			kl->keys[k].action(NULL);
+			// printf("pressed: %c | ", c);
+			k->action(k->args);
 			// scanning = false;
 			break;
 		}
@@ -68,13 +69,14 @@ void *_input_read(void *arg) {
 	return NULL;
 }
 
-void *input_start(void *args)
+void *input_start(Args *args)
 {
-	// func_arg *arg = args;
-	InputManager *im = (InputManager *)args;
+	// Args *arg = args;
+	InputManager *im = (InputManager *)args->ptrs[1];
 	
 	_input_alive_a = true;
-	if (pthread_create(&input_pt, NULL, _input_read, im) != 0) {
+	if (pthread_create(im->thread, NULL, _input_read, args) != 0) 
+	{
         perror("Failed to create renderer thread \"renderer_pt\"\n");
         exit(EXIT_FAILURE);
     }
@@ -121,26 +123,26 @@ KeyList *keylist_setup(int count, Key *keys)
 	return kl;
 }
 
-void keys_add(InputManager *im, int count, Key *keys)
+// Key key_new()
+
+void keys_add(InputManager *im, int count, Key *keys[])
 {
-	KeyList *kl = im->keylist;
-	unsigned int c = count + kl->count < kl->capacity ? kl->capacity : count + kl->count,
-			    pc = count + kl->count < kl->capacity ? kl->capacity : kl->count;
+	unsigned int newcap = (count + im->keylist->count) < im->keylist->capacity ? count : im->keylist->capacity + count,
+				 newcount = 0;
 
-	kl->count = 0;
-
-    Key *temp = calloc(c, sizeof(Key *));
-
+    Key *temp = calloc(newcap, sizeof(Key));
     if (!temp) return;
 
 	int i = 0;
-	while (i < c)
+	KeyList *kl = im->keylist;
+	while (i < (kl->count + count))
 	{
-		temp[i] = i < pc ? kl->keys[i] : keys[i];
-		i++; kl->count++;
+		temp[i] = i < kl->count ? kl->keys[i] : *keys[i];
+		i++; newcount++;
 	}
 
-    Key *old_layers = kl->keys;
-    kl->keys = temp;
-    free(old_layers);
+	free(kl->keys);
+	kl->keys = temp;
+	kl->count = newcount;
+	kl->capacity = newcap;
 }
