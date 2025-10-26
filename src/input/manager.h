@@ -49,12 +49,12 @@ void     input_end       (pthread_t pthread);
 void     input_read      (InputManager *im);
 char    *input_getkeychar(void);
 
-Key     *key_new         (char c, Action action, Args *args);
+Key     *key_new         (char c, Action action, void **args);
 KeyList *keylist_init    (int amount);
 Key     *keylist_add     (InputManager* im, Key *k);
 Key     *keylist_getkey  (KeyList *kl, char c);
 KeyList *keylist_setup   (int count, Key *keys);
 
-void keys_add(InputManager *im, int count, Key *keys[]);
+void keys_add(InputManager *im, int count, Key *keys);
 
 #endif

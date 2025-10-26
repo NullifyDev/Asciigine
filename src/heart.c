@@ -9,26 +9,29 @@
 
 void *moveup(void **args)
 {
-	LayerManager *lm = args[0];
+	LayerManager *lm = (LayerManager*)args;
 	layermgr_shiftlayer(lm, 2, 0, -1);
 	return NULL;
 }
+
 void *movedown(void **args)
 {
-	LayerManager *lm = args[0];
+	LayerManager *lm = (LayerManager*)args;
 	layermgr_shiftlayer(lm, 2, 0, -1);
 	return NULL;
 }
+
 void *moveleft(void **args)
 {
-	LayerManager *lm = args[0];
+	LayerManager *lm = (LayerManager*)args;
 	layermgr_shiftlayer(lm, 2, 0, -1);
 	return NULL;
 }
+
 void *moveright(void **args)
 {
-	LayerManager lm = *(LayerManager*)args[0];
-	layermgr_shiftlayer(&lm, 2, 0, -1);
+	LayerManager *lm = (LayerManager*)args;
+	layermgr_shiftlayer(lm, 2, 0, -1);
 	return NULL;
 }
 
@@ -41,7 +44,6 @@ void free_engine(void)
 
 void *engine_exit(void **args)
 {
-
 	// Heart *heart = (Heart *)&args;
 	// _running = false;
 	// pthread_join(*heart->lm->thread, heart->lm->thread_ret);

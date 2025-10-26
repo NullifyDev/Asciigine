@@ -65,7 +65,7 @@ void layermgr_shiftlayer(LayerManager *lm, const unsigned int l, const int x, co
 
 void layermgr_shiftlayer_ca(Args *coreargs, const unsigned int l, const int x, const  int y)
 {
-	LayerManager *lm = (LayerManager *)coreargs->ptrs[0]; 
+	LayerManager *lm = (LayerManager *)coreargs->ptrs; 
 	layermgr_setlayeroffset(lm, l, lm->layers[l]->offsetX + x, lm->layers[l]->offsetY + y);
 }
 
@@ -93,11 +93,10 @@ void layers_add(LayerManager *lm, unsigned int count, Layer *layers[])
 				 newcount = 0;
 
     Layer **temp = calloc(newcap, sizeof(Layer *));
-
     if (!temp) return;
 
 	int i = 0;
-	while (i < lm->count+count) 
+	while (i < lm->count+count)
 	{
 		temp[i] = i < lm->count ? lm->layers[i] : layers[i];
 		i++; newcount++;

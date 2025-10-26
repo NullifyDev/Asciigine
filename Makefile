@@ -1,6 +1,6 @@
 # Sphere Binary File
 
-CFLAGS = -g -Wall -Werror -pedantic -lpthread -Wno-newline-eof -Wno-unused-function -fsanitize=memory 
+CFLAGS = -g -Wall -Werror -pedantic -lpthread -Wno-newline-eof -Wno-unused-function -fsanitize=memory -Wno-excess-initializers
 # CFLAGS = -g -fsanitize=address -Wno-builtin-declaration-mismatch 
 
 # CLFAGS = -O3 -g3 -W -Wall -Wextra -Wuninitialized -Wstrict-aliasing -pedantic

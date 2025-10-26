@@ -20,12 +20,12 @@ KeyList *keylist_init(int keylist_capacity)
 	return kl;
 }
 
-Key *key_new(char c, Action action, Args *args)
+Key *key_new(char c, Action action, void **args)
 {
 	Key *key = calloc(1, sizeof(Key));
 	key->key = c;
 	key->action = action;
-	key->args = args->ptrs;
+	key->args = args;
 	return key;
 }
 
@@ -125,7 +125,7 @@ KeyList *keylist_setup(int count, Key *keys)
 
 // Key key_new()
 
-void keys_add(InputManager *im, int count, Key *keys[])
+void keys_add(InputManager *im, int count, Key *keys)
 {
 	unsigned int newcap = (count + im->keylist->count) < im->keylist->capacity ? count : im->keylist->capacity + count,
 				 newcount = 0;
@@ -137,7 +137,7 @@ void keys_add(InputManager *im, int count, Key *keys[])
 	KeyList *kl = im->keylist;
 	while (i < (kl->count + count))
 	{
-		temp[i] = i < kl->count ? kl->keys[i] : *keys[i];
+		temp[i] = i < kl->count ? kl->keys[i] : keys[i];
 		i++; newcount++;
 	}
 
